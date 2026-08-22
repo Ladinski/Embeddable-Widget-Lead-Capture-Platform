@@ -40,3 +40,15 @@ class WidgetResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PublicWidgetConfig(BaseModel):
+    id: int
+    type: str
+    title: str
+    description: str | None
+    button_text: str
+    fields: list[WidgetField]
+    
+class EmbedResponse(BaseModel):
+    snippet: str

@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.widget import (
+    EmbedResponse,
     WidgetCreate,
     WidgetResponse,
     WidgetUpdate,
@@ -43,6 +44,23 @@ def get_widgets(
     service = WidgetService(db)
     return service.get_all(current_user.id)
 
+@router.get(
+    "/{widget_id}/embed",
+    response_model=EmbedResponse,
+)
+def get_embed_snippet(
+    widget_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    service = WidgetService(db)
+
+    snippet = service.get_embed_snippet(
+        widget_id,
+        current_user.id,
+    )
+
+    return {"snippet": snippet}
 
 @router.get(
     "/{widget_id}",

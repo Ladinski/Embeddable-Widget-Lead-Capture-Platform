@@ -41,3 +41,11 @@ class WidgetRepository:
         self.db.commit()
         self.db.refresh(widget)
         return widget
+
+    def get_public_by_id(self, widget_id: int) -> Widget | None:
+        statement = select(Widget).where(
+            Widget.id == widget_id,
+            Widget.is_active.is_(True),
+        )
+
+        return self.db.scalar(statement)

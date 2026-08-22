@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.models.widget import Widget
 from app.repositories.widget_repository import WidgetRepository
 from app.schemas.widget import WidgetCreate, WidgetUpdate
@@ -75,3 +76,26 @@ class WidgetService:
     ) -> None:
         widget = self.get_one(widget_id, owner_id)
         self.repository.delete(widget)
+
+    def get_public_config(self, widget_id: int) -> Widget:
+        widget = self.repository.get_public_by_id(widget_id)
+
+        if widget is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Widget not found",
+            )
+
+        return widget
+
+    def get_embed_snippet(
+        self,
+        widget_id: int,
+        owner_id: int,
+    ) -> str:
+        widget = self.get_one(widget_id, owner_id)
+
+        return (
+            f'<script src="{settings.base_url}/static/widget.js'
+            f'?id={widget.id}"></script>'
+        )
