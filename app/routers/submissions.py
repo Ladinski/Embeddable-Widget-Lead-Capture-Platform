@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.limiter import limiter
 from app.schemas.submission import SubmissionCreate, SubmissionResponse
 from app.services.submission_service import SubmissionService
 
@@ -17,10 +18,11 @@ router = APIRouter(
     response_model=SubmissionResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit("5/minute")
 def create_submission(
+    request: Request,
     widget_id: int,
     data: SubmissionCreate,
-    request: Request,
     db: Session = Depends(get_db),
 ):
     service = SubmissionService(db)

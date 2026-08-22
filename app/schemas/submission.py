@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SubmissionCreate(BaseModel):
     data: dict[str, Any]
+    form_check: str | None = Field(default=None, max_length=200)
 
 
 class SubmissionResponse(BaseModel):
