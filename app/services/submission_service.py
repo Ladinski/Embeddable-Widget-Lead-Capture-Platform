@@ -5,7 +5,7 @@ from app.models.submission import Submission
 from app.repositories.submission_repository import SubmissionRepository
 from app.repositories.widget_repository import WidgetRepository
 from app.schemas.submission import SubmissionCreate
-
+from app.services.geo_service import GeoService
 
 MAX_FIELDS = 20
 MAX_STRING_LENGTH = 2000
@@ -15,6 +15,7 @@ class SubmissionService:
     def __init__(self, db: Session):
         self.submissions = SubmissionRepository(db)
         self.widgets = WidgetRepository(db)
+        self.geo = GeoService()
 
     def create(
         self,
@@ -69,11 +70,13 @@ class SubmissionService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Missing required field: {field['name']}",
                 )
-
+        geo = self.geo.lookup(ip_address)
         submission = Submission(
             widget_id=widget.id,
             data=data.data,
             ip_address=ip_address,
+            country=geo.get("country"),
+            city=geo.get("city"),
         )
-
+        
         return self.submissions.create(submission)
