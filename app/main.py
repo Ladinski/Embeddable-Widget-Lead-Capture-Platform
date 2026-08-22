@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 
+from app.core.config import settings
+
 
 app = FastAPI(
-    title="Embeddable Widget & Lead Capture API",
-    description="Backend API for managing embeddable widgets and handling public lead submissions.",
-    version="0.1.0",
+    title=settings.app_name,
+    version=settings.app_version,
 )
 
 
 @app.get("/")
 def root():
     return {
-        "name": "Embeddable Widget & Lead Capture API",
+        "name": settings.app_name,
         "status": "running",
     }
 
