@@ -6,6 +6,7 @@ from app.repositories.submission_repository import SubmissionRepository
 from app.repositories.widget_repository import WidgetRepository
 from app.schemas.submission import SubmissionCreate
 from app.services.geo_service import GeoService
+from app.services.notification_service import NotificationService
 
 MAX_FIELDS = 20
 MAX_STRING_LENGTH = 2000
@@ -16,6 +17,7 @@ class SubmissionService:
         self.submissions = SubmissionRepository(db)
         self.widgets = WidgetRepository(db)
         self.geo = GeoService()
+        self.notifications = NotificationService()
 
     def create(
         self,
@@ -78,5 +80,14 @@ class SubmissionService:
             country=geo.get("country"),
             city=geo.get("city"),
         )
-        
-        return self.submissions.create(submission)
+        saved_submission = self.submissions.create(submission)
+
+        try:
+            self.notifications.send_submission_notification(
+                widget_id=saved_submission.widget_id,
+                submission_id=saved_submission.id,
+            )
+        except Exception as exc:
+            print(f"Notification failed: {exc}")
+
+        return saved_submission
