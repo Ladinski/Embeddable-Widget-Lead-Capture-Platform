@@ -1,44 +1,90 @@
-# FlyRank Capstone — Embeddable Widget Platform
+# Embeddable Widget & Lead Capture Platform
 
-A backend platform that lets customers create embeddable website widgets, generate a one-line script snippet, receive public form submissions, protect those submissions from abuse, enrich them with location data, and expose results through a dashboard API.
+A backend platform for creating embeddable website widgets and safely collecting lead submissions from external websites.
+
+A widget owner can create and manage widgets through an authenticated API, generate a one-line embed script, receive cross-origin form submissions, and view submissions and analytics through dashboard endpoints.
+
+## Features
+
+- JWT authentication
+- Authenticated widget CRUD
+- Tenant-isolated widget ownership
+- One-line widget embed snippet
+- Public cached widget configuration
+- Embeddable JavaScript widget loader
+- Cross-origin form submissions
+- CORS and preflight handling
+- Payload validation
+- Oversized payload protection
+- Honeypot spam protection
+- Per-IP rate limiting
+- IP geolocation enrichment
+- Geo provider fallback
+- Safe notification side effects
+- Submission dashboard
+- Submission statistics
+- Automated integration tests
 
 ## Tech Stack
 
 - Python
 - FastAPI
 - PostgreSQL
-- Docker
+- SQLAlchemy
+- Alembic
+- Docker Compose
 - Pydantic
+- SlowAPI
+- HTTPX
 - Pytest
-
-## Project Status
-
-Currently in Phase 1: Design.
-
-## Planned Features
-
-- Authenticated widget management
-- Multi-tenant data isolation
-- Embeddable JavaScript widget
-- Public widget configuration endpoint
-- Cross-origin form submissions
-- Input validation
-- Rate limiting
-- Spam protection
-- IP geolocation enrichment
-- Provider fallback chain
-- Safe email or webhook side effects
-- Dashboard statistics
-- Automated tests
+- Vanilla JavaScript
 
 ## Architecture
 
-Architecture will be documented during Phase 1.
+```text
+Widget Owner
+    |
+    v
+Authenticated API
+    |
+    +--> Auth
+    |
+    +--> Widget Management
+    |        |
+    |        v
+    |    PostgreSQL
+    |
+    +--> Dashboard
+             |
+             v
+         Submissions
 
-## Setup
 
-Setup instructions will be added as the application is built.
-
-## Limitations
-
-This project is designed to run locally for the capstone. A production deployment, custom domain, and real CDN are outside the initial scope.
+Customer Website
+    |
+    | <script src=".../widget.js?id=1">
+    v
+widget.js
+    |
+    v
+Public Widget Config API
+    |
+    v
+Render Form
+    |
+    v
+Public Submission API
+    |
+    +--> Validation
+    |
+    +--> Rate Limiting
+    |
+    +--> Honeypot Check
+    |
+    +--> Geo Provider A
+    |       |
+    |       +--> failure --> Provider B
+    |
+    +--> Store Submission
+    |
+    +--> Notification Side Effect
